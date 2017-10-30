@@ -1,0 +1,319 @@
+<style>
+    .imgToolbar{
+        position: absolute;
+        right: 26px;
+        padding-top: 8px;
+    }
+    .rotator {
+        margin: 3px;
+        padding: 8px 5px 8px 5px;
+        background: rgba(255,255,255,0.5);
+        border-radius: 2px;
+
+    }
+    .receiptListElem {
+        border-bottom: 1px solid #f1f1f1;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="jumbotron">
+            <h2>STMW Belegerfassung</h2>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="search" class="col-md-2 control-label">Suche</label>
+                    <input type="text" class="form-control" id="search" ng-model="searchText"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Belege
+                <a class="clickable pull-right" data-toggle="modal" data-target="#CreateReceiptModal" ng-click="createReceipt()"><i class="material-icons">add</i></a>
+            </div>
+            <div class="panel-body clickable receiptListElem" ng-repeat="r in receipts | filter:searchText" ng-click="loadReceipt(r);">
+                {{r.reference}}
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-9">
+        <br>
+        <div ng-if="selectedReceipt == null" style="text-align: center;">
+            <h3>Bitte Beleg auswählen</h3><br/>
+            oder <br/><a class="clickable" data-toggle="modal" data-target="#CreateReceiptModal">Neuen Beleg erfassen</a>
+
+            <!--
+            Upload on form submit or button click
+            <form ng-controller="fileUploader" name="form">
+                Single Image with validations
+                <div class="button" ngf-select ng-model="file" name="file" ngf-pattern="'image/*'"
+                     ngf-accept="'image/*'" ngf-max-size="20MB" ngf-min-height="100"
+                     ngf-resize="">Select</div>
+                Multiple files
+                <div class="button" ngf-select ng-model="files" ngf-multiple="true">Select</div>
+                Drop files: <div ngf-drop ng-model="files" class="drop-box">Drop</div>
+                <button type="submit" ng-click="submit()">submit</button>
+            </form>
+
+            Upload right away after file selection:
+            <div class="button" ngf-select="upload($file)">Upload on file select</div>
+            <div class="button" ngf-select="uploadFiles($files)" multiple="multiple">Upload on file select</div>
+            Drop File:
+            <div ngf-drop="uploadFiles($files)" class="drop-box"
+                 ngf-drag-over-class="'dragover'" ngf-multiple="true"
+                 ngf-pattern="'image/*,application/pdf'">Drop Images or PDFs files here</div>
+            <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
+            -->
+
+            <!--
+            Image thumbnail: <img ngf-thumbnail="file || '/thumb.jpg'">
+            Audio preview: <audio controls ngf-src="file"></audio>
+            Video preview: <video controls ngf-src="file"></video>
+            -->
+
+        </div>
+        <div ng-if="selectedReceipt != null">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+
+                            <form class="form-horizontal">
+                                <fieldset>
+                                    <legend>{{selectedReceipt.reference}}</legend>
+
+                                    <div class="row" style="padding-left: 20px; padding-right:20px;" >
+                                        <div class="col-md-6" style="padding-right: 30px;">
+
+                                            <div class="form-group ">
+                                                <label class="control-label" for="receiptType">Von</label>
+                                                <select id="receiptType" class="form-control" ng-model="selectedReceipt.type" ng-options="s.id as s.name for s in receiptTypes"></select>
+                                            </div>
+
+                                            <div class="form-group ">
+                                                <label class="control-label" for="date">Belegdatum</label>
+                                                <input type="date" class="form-control" id="date" ng-model="selectedReceipt.date">
+                                            </div>
+
+
+                                        </div>
+                                        <div class="col-md-6" style="padding-right: 30px;">
+                                            <div class="form-group ">
+                                                <label class="control-label" for="amount">Betrag</label>
+                                                <input type="text" class="form-control" id="amount" ng-model="selectedReceipt.amount">
+                                                <p class="help-block">Bruttobetrag in EUR</p>
+                                            </div>
+
+
+                                        </div>
+
+
+
+
+                                    </div>
+
+
+                                    <!--
+                                    <div class="form-group">
+                                        <label for="receipient" class="col-md-2 control-label">Adressat</label>
+                                        <div class="col-md-10">
+                                            <input type="text" class="form-control" id="receipient" ng-model="selectedReceipt.receipient">
+                                        </div>
+                                    </div>
+                                    -->
+                                    <!--
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">€</span>
+                                            <label for="amount" class="col-md-2 control-label">Betrag</label>
+                                            <div class="col-md-10">
+                                                <input type="text" class="form-control" id="amount" ng-model="selectedReceipt.amount">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    -->
+
+
+                                </fieldset>
+                            </form>
+
+                            <a class="btn btn-raised btn-primary pull-right " ng-click="saveReceipt(selectedReceipt)">Speichern</a>
+
+
+                        </div>
+                    </div>
+                    <div ng-if="file.mimetype == 'image/jpeg'" class="well well-sm" ng-repeat="file in selectedReceipt.files">
+                        <div class="imgToolbar"><a class="clickable rotator" ng-click="rotateImage(selectedReceipt, file.path, 'receiptImg' + $index, -90)"><i class="material-icons">rotate_left</i></a><a class="clickable rotator" ng-click="rotateImage(selectedReceipt, file.path, 'receiptImg' + $index, 90)"><i class="material-icons">rotate_right</i></a></div>
+
+                        <img id="receiptImg{{$index}}" ng-src="{{file.path}}" alt="{{selectedReceipt.reference}}" width="100%">
+
+                    </div>
+                    <div ng-if="file.mimetype == 'application/pdf'" class="well well-sm" ng-repeat="file in selectedReceipt.files">
+
+                        <a href="{{file.path}}" target="_blank">{{file.name}} öffnen</a>
+
+                    </div>
+
+
+                </div>
+                <div class="col-md-3">
+                    <h4>CF-TX</h4>
+
+
+                    <h4>A-TX</h4>
+                    <div class="panel panel-body" ng-repeat="atx in selectedReceipt.atx">
+                        <div class="row" >
+                            <div class="col-md-3">{{atx.from}}</div>
+                            <div class="col-md-3">{{atx.to}}</div>
+                            <div class="col-md-3">{{atx.amount | currency:'€'}}</div>
+                            <div class="col-md-3">
+                                <a><i class="material-icons" style="font-size: 12pt;">call_split</i></a>
+                                <a><i class="material-icons" style="font-size:12pt">edit</i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a class="clickable" data-toggle="modal" data-target="#ATXModal" ng-click="createATXModal(selectedReceipt)"><i class="material-icons">add</i> Transaction hinzufügen</a>
+
+
+
+
+                </div>
+            </div>
+
+
+
+
+
+
+
+        </div>
+
+    </div>
+</div>
+
+<span id="snackbar1" data-toggle="snackbar" data-content="STMW Belegerfassung"></span>
+
+<div class="modal fade" id="CreateReceiptModal" tabindex="-1" role="dialog" aria-labelledby="Articlemodal">
+    <div class="modal-dialog modal-md" role="document">
+
+        <form  name="form">
+
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Neuer Beleg</h4>
+            </div>
+            <div class="modal-body">
+
+                <fieldset>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="text" readonly="" class="form-control" ng-model="file.name" />
+                                  <span class="input-group-btn input-group-sm">
+                                      <div class="button btn btn-fab btn-fab-mini" ngf-select ng-model="file" name="file"
+                                           ngf-pattern="'image/*,application/pdf'"
+                                           ngf-accept="'image/*,application/pdf'"
+                                           ngf-max-size="20MB"
+                                           ngf-min-height=""
+                                           ngf-resize=""><i class="material-icons">attach_file</i>
+                                      </div>
+                                  </span>
+                        </div>
+                    </div>
+
+                </fieldset>
+
+                <!--
+                <form class="form-horizontal" ref='uploadForm'
+                      id='uploadForm'
+                      action='http://192.168.0.108:3015/api/upload'
+                      method='post'
+                      encType="multipart/form-data" >
+                    <fieldset>
+                        <legend>Beleg</legend>
+                        <div class="form-group">
+                            <input type="file" id="file" name="sampleFile" multiple="">
+                            <div class="input-group">
+                                <input type="text" readonly="" class="form-control" placeholder="Beleg erfassen...">
+                                  <span class="input-group-btn input-group-sm">
+                                    <button type="button" class="btn btn-fab btn-fab-mini">
+                                      <i class="material-icons">attach_file</i>
+                                    </button>
+                                  </span>
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                    <input type="submit" name="submit" value="Upload!" />
+
+                    </form>
+                    -->
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" type="submit" name="submit" class="btn btn-pimary" data-dismiss="modal"  ng-click="submit()">Beleg erfassen</button>
+            </div>
+
+        </div>
+
+        </form>
+
+
+    </div>
+</div>
+
+<div class="modal fade" id="ATXModal" tabindex="-1" role="dialog" aria-labelledby="Atxmodal">
+    <div class="modal-dialog modal-md" role="document">
+
+
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="">Neue Transaction</h4>
+                </div>
+                <div class="modal-body">
+
+                    <fieldset>
+
+                        <div class="form-group ">
+                            <label class="control-label" for="ATX_from">Von</label>
+                            <input class="form-control" id="ATX_from" type="text" ng-model="ATX.from">
+                        </div>
+                        <div class="form-group ">
+                            <label class="control-label" for="ATX_to">Zu</label>
+                            <input class="form-control" id="ATX_to" type="text" ng-model="ATX.to">
+                        </div>
+                        <div class="form-group ">
+                            <label class="control-label" for="ATX_amount">Betrag</label>
+                            <input class="form-control" id="ATX_amount" type="text" ng-model="ATX.amount">
+                        </div>
+                        Datum: {{ATX.date | date: "dd.MM.yyyy"}}
+
+                    </fieldset>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" type="submit" name="submit" class="btn btn-pimary" data-dismiss="modal"  ng-click="createATX()">Speichern</button>
+                </div>
+
+            </div>
+
+
+
+
+    </div>
+</div>
+
+
+<script>
+    $.material.init();
+
+</script>

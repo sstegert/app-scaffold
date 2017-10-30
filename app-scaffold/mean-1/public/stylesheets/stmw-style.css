@@ -1,0 +1,16 @@
+.container {width: 100%;}
+
+.clickable:hover {
+    cursor: pointer;
+}
+
+.form-group {
+    padding-top: 0px;
+    margin-top: 0px;
+}
+
+.saveButton {
+    position: fixed;
+    bottom: 0px;
+    right: 20px;
+}

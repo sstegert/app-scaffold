@@ -1,0 +1,28 @@
+{
+  "name": "jquery.dropdown",
+  "main": "js/jquery.dropdown.min.js",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "test"
+  ],
+  "homepage": "https://github.com/CreativeDream/jquery.dropdown",
+  "authors": [
+    "CreativeDream <yuliangagarin@mail.ru>"
+  ],
+  "description": "Simple dropdown menus to nearly anything with this simple plugin.",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": ">= 1.7.2"
+  },
+  "_release": "fee5c1bf81",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "fee5c1bf81e21305a6660c11f0a8776f6b28e234"
+  },
+  "_source": "https://github.com/CreativeDream/jquery.dropdown.git",
+  "_target": "*",
+  "_originalSource": "jquery.dropdown",
+  "_direct": true
+}
